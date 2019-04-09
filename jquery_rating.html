@@ -1,0 +1,98 @@
+	<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<style>
+		body {
+			font-family: Verdana;
+		}
+		h1, h2, h3 {
+			color: darkblue;
+		}
+		.rating-circle {
+			height: 2em;
+			width: 2em;
+			border: .1em solid black;
+			border-radius: 1.1em;
+			display: inline-block;
+			margin: 0;
+			padding: .1em;
+		}
+
+		.rating-hover {
+			background-color: yellow;
+		}
+
+		.rating-chosen {
+			background-color: green;
+		}
+	</style>
+</head>
+<body>
+	<h2>Finding elements using jQuery</h2>
+	<h3>Rate this session</h3>
+	<div id="rating-container" max-value="5"></div>
+
+	<div>
+		<label for="max-value">Enter max value:</label>
+		<input type="text" id="max-value" />
+		<button type="button" id="update-max-value">Update max value</button>
+	</div>
+
+	<div id="output"></div>
+
+	<script src="./jquery-3.3.1.min.js"></script>
+
+	<script>
+		var i = -1;
+		var update = 5;
+
+		function createCircles()
+		{
+			for(j = 0; j < update; j++)
+				$("#rating-container").append('<div class="rating-circle"></div>');
+		}
+
+		$(function(){
+			createCircles();
+
+			$("#update-max-value").click(function(){
+				update = $("input[type=text]").val();
+				$("#rating-container").attr("max-value", update).empty();
+				createCircles();
+			});
+
+			$(document).on("mouseenter", ".rating-circle", function(){
+				$(".rating-circle").removeClass("rating-chosen");
+				$(this).addClass("rating-hover").prevAll().addClass("rating-hover");
+				$(this).nextAll().removeClass("rating-hover");
+			});
+
+			$(document).on("click", ".rating-circle", function(){
+				i = $(this).index();
+				$(this).addClass("rating-chosen").prevAll().addClass("rating-chosen");
+			});
+
+			$(document).on("mouseleave", ".rating-circle", function(){
+				$(".rating-circle").removeClass("rating-hover");
+				if(i != -1)
+					$(".rating-circle").eq(i).addClass("rating-chosen").prevAll().addClass("rating-chosen");
+			});
+
+			$(document).on('click', function(){
+				var rating = i+1;
+				$("#output").html("<b>"+rating+"</b>").prepend($("<div>").load("ajax_call.txt"));
+			});
+
+		});
+
+  	// Original Lab3 code for sending rating and getting them back as message 
+	// $(document).on('click', '#save-rating', function(){
+	// 	var rating = { value: i + 1, maxValue: $('#rating-container').attr('max-value') };
+
+	// 	$.post('http://jquery-edx.azurewebsites.net/api/Rating', rating).done(function(messageData){
+	// 		$('#output').text(messageData.message);
+	// 	}); 
+	// });
+</script>
+</body>
+</html>
